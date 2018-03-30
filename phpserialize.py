@@ -507,7 +507,18 @@ def load(fp, charset='utf-8', errors=default_errors, decode_strings=False,
             if decode_strings:
                 name = name.decode(charset, errors)
             return object_hook(name, dict(_load_array()))
-        raise ValueError('unexpected opcode')
+        if type_ == b'c':
+            _expect(b':')
+            name_length = int(_read_until(b':'))
+            _expect(b'"')
+            name = fp.read(name_length)
+            _expect(b'":')
+            data_length = int(_read_until(b':'))
+            _expect(b'{')
+            data = fp.read(data_length)
+            _expect(b'}')
+            return {name: data}
+        raise ValueError('unexpected opcode: {opcode}'.format(opcode=type_.decode(charset)))
 
     return _unserialize()
 

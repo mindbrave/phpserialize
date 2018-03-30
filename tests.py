@@ -99,6 +99,21 @@ class PhpSerializeTestCase(unittest.TestCase):
         self.assertEqual(user.username, 'admin')
         self.assertEqual(user.__name__, 'WP_User')
 
+    def test_that_loads_data_from_custom_serializer(self):
+        """
+        Custom serializer data has just a string to retrieve. What string means depends on that custom serializer.
+
+        For more reference go here: http://www.phpinternalsbook.com/classes_objects/serialization.html
+        """
+        # Given
+        data = b'C:20:"ClassNamespaceFoobar":6:{foobar}'
+
+        # When
+        data_unserialized = phpserialize.loads(data)
+
+        # Then
+        self.assertEqual(data_unserialized, {'ClassNamespaceFoobar': 'foobar'})
+
 
 if __name__ == '__main__':
     unittest.main()
